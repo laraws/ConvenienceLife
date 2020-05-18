@@ -23,3 +23,7 @@ Route::get('weather/{city}', 'WeatherController@show');
 
 Route::get('express/{number}', 'ExpressController@show');
 
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
