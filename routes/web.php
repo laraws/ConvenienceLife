@@ -14,10 +14,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    dump(config('services.weather.key'));
+//    dump(config('services.weather.key'));
 //    dump(config('services.ses.region'));
     return view('welcome');
 });
 
 Route::get('weather/{city}', 'WeatherController@show');
+
+Route::get('express/{number}', 'ExpressController@show');
 
