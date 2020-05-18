@@ -53,16 +53,16 @@ services:
 
 
     #node
-    node:
-      image: laraws/node:latest
-      container_name: convenience_life_node
-      restart: unless-stopped
-      tty: true
-      volumes:
-        - ./:/app
-      working_dir: /app
-      networks:
-        - convenience_life_network
+  node:
+    image: laraws/node:latest
+    container_name: convenience_life_node
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./:/app
+    working_dir: /app
+    networks:
+      - convenience_life_network
 
 #Docker Networks
 networks:
