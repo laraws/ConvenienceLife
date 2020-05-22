@@ -10,7 +10,7 @@ services:
     environment:
       SERVICE_NAME: app
       SERVICE_TAGS: dev
-      XDEBUG_CONFIG: remote_host=192.168.0.111
+      XDEBUG_CONFIG: remote_host=192.168.1.108
     working_dir: /var/www
     volumes:
       - ./:/var/www
