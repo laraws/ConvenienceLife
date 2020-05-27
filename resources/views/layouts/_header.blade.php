@@ -1,9 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container ">
-        <a class="navbar-brand" href="{{ route('home') }}">Weibo App</a>
+        <a class="navbar-brand" href="{{ route('home') }}">conveniencelife</a>
         <ul class="navbar-nav justify-content-end">
             @if (Auth::check())
                 <li class="nav-item"><a class="nav-link" href="{{ route('users.index') }}">用户列表</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('weathers.index') }}">天气列表</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('expresses.index') }}">物流列表</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ Auth::user()->name }}

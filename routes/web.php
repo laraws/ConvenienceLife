@@ -19,9 +19,18 @@ Route::get('/', function () {
     return view('static_pages.home');
 });
 
-Route::get('weather/{city}', 'WeatherController@show');
+//Route::get('weathers', 'WeatherController@index');
+//Route::get('weathers/{wid}', 'WeatherController@show');
+//Route::get('weathers/create', 'WeatherController@create');
+//Route::post('weathers', 'WeatherController@store');
+//Route::get('weathers/edit', 'WeatherController@edit');
+//Route::put('weathers', 'WeatherController@update');
 
-Route::get('express/{number}', 'ExpressController@show');
+Route::resource('weathers', 'WeatherController');
+
+Route::resource('expresses', 'ExpressController');
+//
+//Route::get('express/{number}', 'ExpressController@show');
 
 
 Auth::routes();

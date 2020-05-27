@@ -49,6 +49,11 @@ class User extends Authenticatable
         return $this->hasMany(Status::class);
     }
 
+    public function weathers()
+    {
+        return $this->hasMany(Weather::class);
+    }
+
     public function feed()
     {
         return $this->statuses()->orderBy('created_at', 'desc');
