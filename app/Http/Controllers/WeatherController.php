@@ -3,17 +3,147 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Laraws\Weather\Weather;
+use Illuminate\Support\Facades\Auth;
+use Laraws\Weather\Weather as WeatherApi;
+use App\Models\Weather;
+use Illuminate\Support\Facades\Redis;
 
 class WeatherController extends Controller
 {
-    public function show(Request $request, Weather $weather, $city)
+
+    public function __construct()
     {
-        return $weather->getWeather($city);
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store', 'index']
+        ]);
+//        $this->middleware('guest', [
+//            'only' => ['create']
+//        ]);
     }
 
-//    public function show(Request $request,$city)
-//    {
-//        return app('weather')->getWeather($city);
-//    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $weatherInfos = Weather::where('user_id', $user->id)->get();
+        return view('weathers.index', compact('weatherInfos'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminafunciton and uite\Http\Response
+     */
+    public function create()
+    {
+        return view('weathers.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request, WeatherApi $weatherApi)
+    {
+        $city = $request->input('city') ??  abort(404);
+        $type = $request->input('type') ?? 'base';
+        $user_id = Auth::id();
+        $keyLimit = 'weathers:user:'.$user_id;
+        $times = Redis::get($keyLimit);
+        if ($times >= 10) {
+            session()->flash('success', '查询次数达到限制！');
+            return redirect()->route('weathers.index');
+        }
+        $keyWeather = 'weathers:user:'.md5($city);
+        $weatherInfo = Redis::get($keyWeather);
+        if ($weatherInfo) {
+            $weatherInfo = json_decode($weatherInfo, true);
+        } else {
+            $result = $weatherApi->getWeather($city, $type);
+            $weatherInfo = $result['lives'][0];
+            Redis::set($keyWeather, json_encode($weatherInfo));
+            Redis::expire($keyWeather, 3600);
+        }
+        $weather = Weather::where('title', 'like', '%'.$city.'%')->where('user_id', 0)->first();
+        if ($weather) {
+            $weather->update([
+                'content' => json_encode($weatherInfo)
+            ]);
+        } else {
+            $weather = Weather::create([
+                'title' => $weatherInfo['city'].'live',
+                'content' => json_encode($weatherInfo),
+                'user_id' => $user_id
+            ]);
+        }
+
+        Redis::incr($keyLimit);
+
+
+        return redirect()->route('weathers.show', $weather);
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Weather $weather)
+    {
+        $weatherInfo = Weather::find($weather->id);
+        return view('weathers.show', compact('weatherInfo'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request, Weather $weather)
+    {
+        $weatherInfo = Weather::find($weather->id);
+
+        return view('weathers.edit', compact('weatherInfo'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Weather $weather)
+    {
+        $this->validate($request, [
+            'title' => 'required|max:50',
+        ]);
+        $data = [];
+        $data['title'] = $request->title;
+        $weather->update($data);
+        session()->flash('success', '更新天气信息成功！');
+        return redirect()->route('weathers.show', $weather);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Weather $weather)
+    {
+        $weather->delete();
+        session()->flash('success', '成功删除天气！');
+        return back();
+    }
 }
