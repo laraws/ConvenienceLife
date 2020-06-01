@@ -65,7 +65,7 @@ services:
       - convenience_life_network
 
   redis:
-    image: redis:redis
+    image: redis:latest
     container_name: convenience_life_redis
     ports:
       - "6379:6379"
