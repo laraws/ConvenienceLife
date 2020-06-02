@@ -85,6 +85,10 @@ laravel数据迁移
 docker-compose exec app php artisan migrate
 ```
 
+```bash
+docker-compose exec app php artisan db:seed
+```
+
 ## 测试运行效果
 
 访问`127.0.0.1`
