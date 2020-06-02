@@ -41,13 +41,13 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: conveniencelife
-      MYSQL_ROOT_PASSWORD: aa123456
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      - MYSQL_ROOT_PASSWORD=aa123456
+      - MYSQL_DATABASE=conveniencelife
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=aa123456
     volumes:
       - dbdata:/var/lib/mysql/
-      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
       - convenience_life_network
 
