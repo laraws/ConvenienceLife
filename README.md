@@ -34,7 +34,7 @@ cp .env.example .env
 vim .env
 ```
 
-Find the block that specifies DB_CONNECTION and update it to reflect the specifics of your setup. You will modify the following fields:
+配置env中的database
 
 ```dotenv
 DB_CONNECTION=mysql
@@ -45,12 +45,10 @@ DB_USERNAME=laraveluser
 DB_PASSWORD=123456
 ```
 
-```bash
-docker-compose exec app php artisan key:generate
-```
+配置key
 
 ```bash
-docker-compose exec app php artisan config:cache
+docker-compose exec app php artisan key:generate
 ```
 
 配置mysql
