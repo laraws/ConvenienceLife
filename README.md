@@ -1,6 +1,30 @@
-## install project
+# Introduction
 
-### config laravel
+生活信息查询项目, 目前支持天气和物流查询
+
+## Installation
+
+前提:
+
+- docker
+- docker-compose
+
+### 复制项目
+
+```bash
+https://github.com/laraws/ConvenienceLife.git
+```
+
+### 安装项目
+
+运行docker-compose文件一键部署项目运行环境
+
+```bash
+cd ConvenienceLife
+docker-compose up -d
+```
+
+配置项目
 
 ```bash
 cp .env.example .env
@@ -10,7 +34,7 @@ cp .env.example .env
 vim .env
 ```
 
-Find the block that specifies DB_CONNECTION and update it to reflect the specifics of your setup. You will modify the following fields:
+配置env中的database
 
 ```dotenv
 DB_CONNECTION=mysql
@@ -21,34 +45,27 @@ DB_USERNAME=laraveluser
 DB_PASSWORD=123456
 ```
 
+配置key
+
 ```bash
 docker-compose exec app php artisan key:generate
 ```
 
-```bash
-docker-compose exec app php artisan config:cache
-```
-
-### config mysql
+配置mysql
 
 ```bash
 docker-compose exec db bash
 ```
 
-in db bash
 
 ```bash
 mysql -u root -p
 ```
 
-in mysql db
 
 ```bash
 show databases;
 ```
-you can find the `laravel` database.
-
-db grant, run command in mysql db
 
 ```bash
 GRANT ALL ON conveniencelife.* TO 'laraveluser'@'%' IDENTIFIED BY '123456';
@@ -62,17 +79,19 @@ FLUSH PRIVILEGES;
 EXIT;
 ```
 
-### laravel database migration and test
+laravel数据迁移
 
 ```bash
 docker-compose exec app php artisan migrate
 ```
 
 ```bash
-docker-compose exec app php artisan tinker
-\DB::table('migrations')->get();
+docker-compose exec app php artisan db:seed
 ```
 
+## 测试运行效果
+
+访问`127.0.0.1`
 
 
 
