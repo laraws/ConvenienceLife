@@ -8,9 +8,9 @@ services:
     restart: unless-stopped
     tty: true
     environment:
-      SERVICE_NAME: app
-      SERVICE_TAGS: dev
-      XDEBUG_CONFIG: remote_host=192.168.1.102
+      SERVICE_NAME: ${SERVICE_TAGS}
+      SERVICE_TAGS: ${SERVICE_NAME}
+      XDEBUG_CONFIG: remote_host=${XDEBUG_REMOTE_HOST}
     working_dir: /var/www
     volumes:
       - ./:/var/www
@@ -41,10 +41,10 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=aa123456
-      - MYSQL_DATABASE=conveniencelife
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=aa123456
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD_DOCKER}
+      - MYSQL_DATABASE=${DB_DATABASE_DOCKER}
+      - MYSQL_USER=${DB_USERNAME_DOCKER}
+      - MYSQL_PASSWORD=${DB_PASSWORD_DOCKER}
     volumes:
       - dbdata:/var/lib/mysql/
       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
@@ -68,7 +68,7 @@ services:
     image: bitnami/redis:latest
     container_name: convenience_life_redis
     environment:
-      - REDIS_PASSWORD=aa123456
+      - REDIS_PASSWORD=${REDIS_PASSWORD_DOCKER}
     volumes:
       - redisdata:/bitnami
     ports:
