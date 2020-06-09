@@ -65,9 +65,12 @@ services:
       - convenience_life_network
 
   redis:
-    image: redis:latest
+    image: bitnami/redis:latest
     container_name: convenience_life_redis
-    command: redis-server --requirepass aa123456
+    environment:
+      - REDIS_PASSWORD=aa123456
+    volumes:
+      - redisdata:/bitnami
     ports:
       - "6379:6379"
     networks:
@@ -80,4 +83,6 @@ networks:
 #Volumes
 volumes:
   dbdata:
+    driver: local
+  redisdata:
     driver: local
