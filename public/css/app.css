@@ -10970,6 +10970,11 @@ footer img.brand-icon {
   height: 17px;
 }
 
+footer .icp {
+  display: inline-block;
+  float: right;
+}
+
 /* User gravatar */
 
 section.user_info {
