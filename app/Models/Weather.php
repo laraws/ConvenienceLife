@@ -8,7 +8,7 @@ class Weather extends Model
 {
     protected $table = 'weathers';
     protected $fillable = [
-        'title', 'content', 'user_id'
+        'title', 'content', 'user_id', 'has_subscribed'
     ];
 
     public function user()

@@ -12,6 +12,17 @@
         @endswitch
     </p>
 
+
+
+    <a href="{{route('expresses.edit', $express->id)}}" class="btn btn-secondary btn-sm" role="button">编辑</a>
+
+    <form action="{{ route('expresses.subscribe', $express->id) }}" method="post" class="float-left">
+        {{ csrf_field() }}
+        {{ method_field('PUT') }}
+        <button type="submit" class="btn btn-sm btn-secondary">@if ($express->has_subscribed == 1)已订阅 @else
+        点击订阅 @endif</button>
+    </form>
+
     <form action="{{ route('expresses.destroy', $express->id) }}" method="post" class="float-right">
         {{ csrf_field() }}
         {{ method_field('DELETE') }}

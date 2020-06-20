@@ -27,8 +27,10 @@ Route::get('/', function () {
 //Route::put('weathers', 'WeatherController@update');
 
 Route::resource('weathers', 'WeatherController');
+Route::put('/expresses/subscribe/{weather}', 'WeatherController@subscribe')->name('weathers.subscribe');
 
 Route::resource('expresses', 'ExpressController');
+Route::put('/expresses/subscribe/{express}', 'ExpressController@subscribe')->name('expresses.subscribe');
 //
 //Route::get('express/{number}', 'ExpressController@show');
 

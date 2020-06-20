@@ -154,7 +154,21 @@ class ExpressController extends Controller
     public function destroy(Express $express)
     {
         $express->delete();
-        session()->flash('success', '成功删除天气！');
+        session()->flash('success', '成功删除物流信息！');
+        return back();
+    }
+
+    public function subscribe(Express $express)
+    {
+        $hasSubscribe = $express->has_subscribed;
+        if ($hasSubscribe) {
+            $express->update(['has_subscribed' => 0]);
+            session()->flash('success', '取消订阅成功！');
+        } else {
+            $express->update(['has_subscribed' => 1]);
+            session()->flash('success', '订阅成功！');
+        }
+
         return back();
     }
 

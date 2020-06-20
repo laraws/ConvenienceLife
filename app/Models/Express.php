@@ -9,7 +9,7 @@ class Express extends Model
     protected $table = 'expresses';
     protected $fillable = [
         'title', 'content', 'user_id', 'tracking_number', 'company_name_en', 'company_name',
-        'sign_status'
+        'sign_status', 'has_subscribed'
     ];
 
     public function user()

@@ -4,8 +4,20 @@
         <ul class="navbar-nav justify-content-end">
             @if (Auth::check())
                 <li class="nav-item"><a class="nav-link" href="{{ route('users.index') }}">用户列表</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('weathers.index') }}">天气列表</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('expresses.index') }}">物流列表</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">天气查询</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{{route('weathers.index')}}">天气列表</a>
+                        <a class="dropdown-item" href="{{route('weathers.create')}}">天气查询</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">物流查询</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{{route('expresses.index')}}">物流列表</a>
+                        <a class="dropdown-item" href="{{route('expresses.create')}}">物流查询</a>
+                    </div>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ Auth::user()->name }}

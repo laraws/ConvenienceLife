@@ -156,4 +156,18 @@ class WeatherController extends Controller
         session()->flash('success', '成功删除天气！');
         return back();
     }
+
+    public function subscribe(Weather $weather)
+    {
+        $hasSubscribe = $weather->has_subscribed;
+        if ($hasSubscribe) {
+            $weather->update(['has_subscribed' => 0]);
+            session()->flash('success', '取消订阅成功！');
+        } else {
+            $weather->update(['has_subscribed' => 1]);
+            session()->flash('success', '订阅成功！');
+        }
+
+        return back();
+    }
 }
