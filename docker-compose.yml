@@ -3,7 +3,10 @@ services:
 
   #PHP Service
   app:
-    image: laraws/php:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+    image: conveniencelife/php
     container_name: convenience_life_app
     restart: unless-stopped
     tty: true
@@ -14,7 +17,8 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
-      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./docker-config/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - crondata:/var/spool/cron/
     networks:
       - convenience_life_network
 
@@ -28,7 +32,7 @@ services:
       - "80:80"
     volumes:
       - ./:/var/www
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./docker-config/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - convenience_life_network
 
@@ -85,4 +89,6 @@ volumes:
   dbdata:
     driver: local
   redisdata:
+    driver: local
+  crondata:
     driver: local
