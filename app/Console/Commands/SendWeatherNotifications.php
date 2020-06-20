@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Mail\WeatherInfo;
 use App\Models\Weather;
 use Illuminate\Console\Command;
+use Mail;
+use App\Models\User;
 
 class SendWeatherNotifications extends Command
 {

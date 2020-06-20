@@ -10,6 +10,7 @@ services:
     container_name: convenience_life_app
     restart: unless-stopped
     tty: true
+    command: bash -c "/var/www/docker-config/php/shell/setup.sh && php-fpm"
     environment:
       SERVICE_NAME: ${SERVICE_TAGS}
       SERVICE_TAGS: ${SERVICE_NAME}
@@ -17,8 +18,9 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
-      - ./docker-config/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./docker-config/php/php-config/local.ini:/usr/local/etc/php/conf.d/local.ini
       - crondata:/var/spool/cron/
+      - supervisorddata:/etc/supervisor/conf.d/
     networks:
       - convenience_life_network
 
@@ -91,4 +93,6 @@ volumes:
   redisdata:
     driver: local
   crondata:
+    driver: local
+  supervisorddata:
     driver: local
