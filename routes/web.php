@@ -14,25 +14,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-//    dump(config('services.weather.key'));
-//    dump(config('services.ses.region'));
     return view('static_pages.home');
 });
-
-//Route::get('weathers', 'WeatherController@index');
-//Route::get('weathers/{wid}', 'WeatherController@show');
-//Route::get('weathers/create', 'WeatherController@create');
-//Route::post('weathers', 'WeatherController@store');
-//Route::get('weathers/edit', 'WeatherController@edit');
-//Route::put('weathers', 'WeatherController@update');
 
 Route::resource('weathers', 'WeatherController');
 Route::put('/expresses/subscribe/{weather}', 'WeatherController@subscribe')->name('weathers.subscribe');
 
 Route::resource('expresses', 'ExpressController');
 Route::put('/expresses/subscribe/{express}', 'ExpressController@subscribe')->name('expresses.subscribe');
-//
-//Route::get('express/{number}', 'ExpressController@show');
 
 
 Auth::routes();

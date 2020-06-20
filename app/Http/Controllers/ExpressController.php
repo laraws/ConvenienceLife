@@ -7,15 +7,18 @@ use App\Models\Express;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Laraws\Express\Express as ExpressApi;
 use Illuminate\Support\Facades\Redis;
 use Mail;
+use App\Services\ExpressService;
 
 class ExpressController extends Controller
 {
+    public $expressService;
 
-    public function __construct()
+
+    public function __construct(ExpressService $expressService)
     {
+        $this->expressService = $expressService;
         $this->middleware('auth', [
             'except' => ['show', 'create', 'store', 'index']
         ]);
@@ -52,52 +55,26 @@ class ExpressController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, ExpressApi $expressApi)
+    public function store(Request $request)
     {
         $tracking_number = $request->tracking_number;
         $title = $request->title;
-        $key = 'express:'.$tracking_number;
-        $expressInfo = Redis::get($key);
+        $expressInfo = $this->expressService->expressInfo($tracking_number);
         if (!$expressInfo) {
-            $expressInfo = $expressApi->getExpress($tracking_number);
-            if ($expressInfo) {
-                Redis::set($key, json_encode($expressInfo));
-                Redis::expire($key, 3600);
-            } else {
-                session()->flash('failed', '物流信息为空');
-                return view('expresses.create');
-            }
-        } else {
-            $expressInfo = json_decode($expressInfo, true);
+            session()->flash('failed', '物流信息为空');
+            return view('expresses.create');
         }
-
-
         $express = Express::where('user_id', Auth::id())->where('tracking_number', $tracking_number)->first();
 
         if ($express) {
             session()->flash('success', '物流记录已经存在, 物流记录更新成功');
-            $express->update([
-                'title' => $title,
-                'content' => json_encode($expressInfo['list']),
-                'sign_status' => $expressInfo['deliverystatus']
-            ]);
-            return redirect()->route('expresses.show', $express);
+            $express = $this->expressService->expressUpdate($express, $expressInfo, $request);
         } else {
-            $express = Express::create([
-                'title' => $title,
-                'company_name_en' => $expressInfo['type'],
-                'company_name' => $expressInfo['typename'],
-                'content' => json_encode($expressInfo['list']),
-                'tracking_number' => $tracking_number,
-                'sign_status' => $expressInfo['deliverystatus'],
-                'user_id' => Auth::id()
-            ]);
+            $express = $this->expressService->expressSave($express, $expressInfo, $request, Auth::id());
         }
 
 
-        $this->expressUpdate($express);
-
-//        Mail::to('laraotwell@gmail.com')->send(new ExpressInfo($expressInfo));
+        $this->expressService->expressNotify($express);
 
         return redirect()->route('expresses.show', $express);
     }
@@ -135,13 +112,24 @@ class ExpressController extends Controller
      */
     public function update(Request $request, Express $express)
     {
+        $type = $request->input('type') ?? 'info';
         $this->validate($request, [
-            'title' => 'required|max:50'
+            'title' => 'max:50'
         ]);
-        $data = [];
-        $data['title'] = $request->title;
-        $express->update($data);
-        session()->flash('success', '更新物流备注成功！');
+        if ($type == 'data') {
+            $expressInfo = $this->expressService->expressInfo($express->tracking_number);
+            if (!$expressInfo) {
+                session()->flash('failed', '物流信息为空');
+                return redirect()->route('expresses.show', $express);
+            }
+            $express = $this->expressService->expressUpdate($express, $expressInfo, $request);
+        } else {
+            $data = [];
+            $data['title'] = $request->title;
+            $express->update($data);
+        }
+
+        session()->flash('success', '更新物流成功！');
         return redirect()->route('expresses.show', $express);
     }
 
@@ -170,19 +158,5 @@ class ExpressController extends Controller
         }
 
         return back();
-    }
-
-    protected function expressUpdate(Express $express)
-    {
-//        $view = 'emails.express.update';
-//        $data = compact('express');
-//        $to = User::find($express->user_id)->email;
-//        $subject = '您的'.$express->title.'物流更新';
-
-        Mail::to(User::find($express->user_id))->queue(new ExpressInfo($express));
-
-//        Mail::queue($view, $data, function ($message) use ($to, $subject) {
-//            $message->to($to)->subject($subject);
-//        });
     }
 }
