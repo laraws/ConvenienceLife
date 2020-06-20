@@ -43,7 +43,9 @@ class SendWeatherNotifications extends Command
     {
         $weathers = Weather::all();
         foreach ($weathers as $weather) {
-            Mail::to(User::find($weather->user_id))->queue(new WeatherInfo($weather));
+            if ($weather->has_subscribed == 1) {
+                Mail::to(User::find($weather->user_id))->queue(new WeatherInfo($weather));
+            }
         }
     }
 }

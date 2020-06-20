@@ -2,35 +2,38 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Express;
 use App\Mail\ExpressInfo;
+use App\Models\Express;
 use App\Models\User;
-use Mail;
+use Illuminate\Console\Command;
+use App\Services\ExpressService;
 
-class SendExpressNotifications extends Command
+class UpdateExpressInfo extends Command
 {
+    public $expressService;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'expresses:notification';
+    protected $signature = 'expresses:update';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Send express notifications';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(ExpressService $expressService)
     {
+        $this->expressService = $expressService;
         parent::__construct();
     }
 
@@ -44,7 +47,8 @@ class SendExpressNotifications extends Command
         $expresses = Express::all();
         foreach ($expresses as $express) {
             if ($express->has_subscribed == 1 && $express->sign_status != 3) {
-                Mail::to(User::find($express->user_id))->queue(new ExpressInfo($express));
+                $expressInfo = $this->expressService->expressInfo($expresses->tracking_number);
+                $this->expressService->expressUpdate($expresses, $expressInfo);
             }
 
         }

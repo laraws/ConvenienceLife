@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
 //        $schedule->command('inspire')->everyMinute();
         $schedule->command('expresses:notification')->hourly();
         $schedule->command('weathers:notification')->hourly();
+        $schedule->command('expresses:update')->everyMinute();
     }
 
     /**

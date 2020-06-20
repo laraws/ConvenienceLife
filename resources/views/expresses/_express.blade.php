@@ -23,6 +23,12 @@
         点击订阅 @endif</button>
     </form>
 
+    <form action="{{ route('expresses.update', [$express->id, 'type' => 'data']) }}" method="post" class="float-left">
+        {{ csrf_field() }}
+        {{ method_field('PUT') }}
+        <button type="submit" class="btn btn-sm btn-secondary">更新</button>
+    </form>
+
     <form action="{{ route('expresses.destroy', $express->id) }}" method="post" class="float-right">
         {{ csrf_field() }}
         {{ method_field('DELETE') }}

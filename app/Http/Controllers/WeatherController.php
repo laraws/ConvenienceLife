@@ -10,12 +10,16 @@ use App\Models\Weather;
 use Illuminate\Support\Facades\Redis;
 use Mail;
 use App\Models\User;
+use APP\Services\WeatherService;
 
 class WeatherController extends Controller
 {
 
-    public function __construct()
+    public $weatherService;
+
+    public function __construct(WeatherService $weatherService)
     {
+        $this->weatherService = $weatherService;
         $this->middleware('auth', [
             'except' => ['show', 'create', 'store', 'index']
         ]);
@@ -134,12 +138,24 @@ class WeatherController extends Controller
      */
     public function update(Request $request, Weather $weather)
     {
+        $type = $request->input('type') ?? 'info';
         $this->validate($request, [
             'title' => 'required|max:50',
         ]);
-        $data = [];
-        $data['title'] = $request->title;
-        $weather->update($data);
+        if ($type == 'data') {
+            $expressInfo = $this->weatherService->weatherInfo($weather->title);
+            if (!$expressInfo) {
+                session()->flash('failed', '天气信息为空');
+                return redirect()->route('weathers.show', $weather);
+            }
+            $params['type'] = $type;
+            $params['title'] = $request->title;
+            $express = $this->weatherService->weatherUpdate($weather, $expressInfo, $params);
+        } else {
+            $data = [];
+            $data['title'] = $request->title;
+            $weather->update($data);
+        }
         session()->flash('success', '更新天气信息成功！');
         return redirect()->route('weathers.show', $weather);
     }

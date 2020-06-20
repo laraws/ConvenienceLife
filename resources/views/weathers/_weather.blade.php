@@ -15,6 +15,12 @@
                 点击订阅 @endif</button>
     </form>
 
+    <form action="{{ route('weathers.update', [$weatherInfo->id, 'type' => 'data']) }}" method="post" class="float-left">
+        {{ csrf_field() }}
+        {{ method_field('PUT') }}
+        <button type="submit" class="btn btn-sm btn-secondary">更新</button>
+    </form>
+
     <form action="{{ route('weathers.destroy', $weatherInfo->id) }}" method="post" class="float-right">
         {{ csrf_field() }}
         {{ method_field('DELETE') }}

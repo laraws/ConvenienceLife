@@ -48,10 +48,10 @@ class ExpressService
         return $express;
     }
 
-    public function expressUpdate($express, $expressInfo, $request)
+    public function expressUpdate($express, $expressInfo, $params = [])
     {
         $express->update([
-            'title' => $request->input('title'),
+            'title' => $params['title'] ?? $express->title,
             'content' => json_encode($expressInfo['list']),
             'sign_status' => $expressInfo['deliverystatus']
         ]);

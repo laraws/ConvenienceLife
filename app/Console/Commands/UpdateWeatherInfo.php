@@ -2,27 +2,26 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Express;
-use App\Mail\ExpressInfo;
+use App\Mail\WeatherInfo;
 use App\Models\User;
-use Mail;
+use App\Models\Weather;
+use Illuminate\Console\Command;
 
-class SendExpressNotifications extends Command
+class UpdateWeatherInfo extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'expresses:notification';
+    protected $signature = 'weathers:update';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Send express notifications';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -41,12 +40,11 @@ class SendExpressNotifications extends Command
      */
     public function handle()
     {
-        $expresses = Express::all();
-        foreach ($expresses as $express) {
-            if ($express->has_subscribed == 1 && $express->sign_status != 3) {
-                Mail::to(User::find($express->user_id))->queue(new ExpressInfo($express));
-            }
+        $weathers = Weather::all();
+        foreach ($weathers as $weather) {
+            if ($weather->has_subscribed == 1) {
 
+            }
         }
     }
 }

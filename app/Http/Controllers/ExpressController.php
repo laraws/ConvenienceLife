@@ -68,6 +68,7 @@ class ExpressController extends Controller
 
         if ($express) {
             session()->flash('success', '物流记录已经存在, 物流记录更新成功');
+            $params['title'] = $request->title;
             $express = $this->expressService->expressUpdate($express, $expressInfo, $request);
         } else {
             $express = $this->expressService->expressSave($express, $expressInfo, $request, Auth::id());
@@ -122,7 +123,9 @@ class ExpressController extends Controller
                 session()->flash('failed', '物流信息为空');
                 return redirect()->route('expresses.show', $express);
             }
-            $express = $this->expressService->expressUpdate($express, $expressInfo, $request);
+            $params['type'] = $type;
+            $params['title'] = $request->title;
+            $express = $this->expressService->expressUpdate($express, $expressInfo, $params);
         } else {
             $data = [];
             $data['title'] = $request->title;
