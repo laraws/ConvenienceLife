@@ -60,8 +60,13 @@ class ExpressController extends Controller
         $expressInfo = Redis::get($key);
         if (!$expressInfo) {
             $expressInfo = $expressApi->getExpress($tracking_number);
-            Redis::set($key, json_encode($expressInfo));
-            Redis::expire($key, 3600);
+            if ($expressInfo) {
+                Redis::set($key, json_encode($expressInfo));
+                Redis::expire($key, 3600);
+            } else {
+                session()->flash('failed', '物流信息为空');
+                return view('expresses.create');
+            }
         } else {
             $expressInfo = json_decode($expressInfo, true);
         }

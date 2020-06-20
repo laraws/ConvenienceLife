@@ -1,11 +1,11 @@
 @extends('layouts.default')
-@section('title', '物流查询')
+@section('title', '天气查询')
 
 @section('content')
     <div class="offset-md-2 col-md-8">
         <div class="card ">
             <div class="card-header">
-                <h5>物流查询</h5>
+                <h5>天气查询</h5>
             </div>
             <div class="card-body">
 

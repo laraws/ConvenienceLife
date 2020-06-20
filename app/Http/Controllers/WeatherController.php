@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\WeatherInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laraws\Weather\Weather as WeatherApi;
 use App\Models\Weather;
 use Illuminate\Support\Facades\Redis;
+use Mail;
+use App\Models\User;
 
 class WeatherController extends Controller
 {
@@ -46,21 +49,21 @@ class WeatherController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, WeatherApi $weatherApi)
     {
-        $city = $request->input('city') ??  abort(404);
+        $city = $request->input('city') ?? abort(404);
         $type = $request->input('type') ?? 'base';
         $user_id = Auth::id();
-        $keyLimit = 'weathers:user:'.$user_id;
+        $keyLimit = 'weathers:user:' . $user_id;
         $times = Redis::get($keyLimit);
         if ($times >= 10) {
             session()->flash('success', '查询次数达到限制！');
             return redirect()->route('weathers.index');
         }
-        $keyWeather = 'weathers:user:'.md5($city);
+        $keyWeather = 'weathers:user:' . md5($city);
         $weatherInfo = Redis::get($keyWeather);
         if ($weatherInfo) {
             $weatherInfo = json_decode($weatherInfo, true);
@@ -70,14 +73,14 @@ class WeatherController extends Controller
             Redis::set($keyWeather, json_encode($weatherInfo));
             Redis::expire($keyWeather, 3600);
         }
-        $weather = Weather::where('title', 'like', '%'.$city.'%')->where('user_id', 0)->first();
+        $weather = Weather::where('title', 'like', '%' . $city . '%')->where('user_id', 0)->first();
         if ($weather) {
             $weather->update([
                 'content' => json_encode($weatherInfo)
             ]);
         } else {
             $weather = Weather::create([
-                'title' => $weatherInfo['city'].'live',
+                'title' => $weatherInfo['city'] . 'live',
                 'content' => json_encode($weatherInfo),
                 'user_id' => $user_id
             ]);
@@ -85,15 +88,22 @@ class WeatherController extends Controller
 
         Redis::incr($keyLimit);
 
+        $this->weatherUpdate($weather);
+
 
         return redirect()->route('weathers.show', $weather);
 
     }
 
+    private function weatherUpdate($weather)
+    {
+        Mail::to(User::find($weather->user_id))->queue(new WeatherInfo($weather));
+    }
+
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show(Weather $weather)
@@ -105,7 +115,7 @@ class WeatherController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, Weather $weather)
@@ -118,8 +128,8 @@ class WeatherController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Weather $weather)
@@ -137,7 +147,7 @@ class WeatherController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Weather $weather)
