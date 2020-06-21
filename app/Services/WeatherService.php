@@ -17,34 +17,42 @@ class WeatherService
         $this->weatherApi = $weatherApi;
     }
 
-    public function expressInfo($city)
+    public function weatherInfo($city, $type, $uid)
     {
-        $key = 'weather:'.$city;
-        $weatherInfo = Redis::get($key);
-        if (!$weatherInfo) {
-            $weatherInfo = $this->weatherApi->getExpress($city);
-            if ($weatherInfo) {
-                Redis::set($key, json_encode($weatherInfo));
-                Redis::expire($key, 3600);
-            }
-        } else {
-            $weatherInfo = json_decode($weatherInfo, true);
+        $keyLimit = 'weathers:user:' . $uid;
+        $times = Redis::get($keyLimit);
+        if ($times >= 10) {
+            session()->flash('success', '查询次数达到限制！');
+            return redirect()->route('weathers.index');
         }
+        $keyWeather = 'weathers:user:' . md5($city);
+        $weatherInfo = Redis::get($keyWeather);
+        if ($weatherInfo) {
+            $weatherInfo = json_decode($weatherInfo, true);
+        } else {
+            $result = $this->weatherApi->getWeather($city, $type);
+            $weatherInfo = $result['lives'][0];
+            Redis::set($keyWeather, json_encode($weatherInfo));
+            Redis::expire($keyWeather, 3600);
+        }
+        Redis::incr($keyLimit);
         return $weatherInfo;
     }
 
-    public function expressSave($weather, $weatherInfo, $request, $uid)
+    public function weatherSave($weather, $weatherInfo, $request, $uid)
     {
         $weather = Weather::create([
             'title' => $weatherInfo['city'] . 'live',
+            'city' => $weatherInfo['city'],
             'content' => json_encode($weatherInfo),
-            'user_id' => $uid
+            'user_id' => $uid,
+            'type' => 1
         ]);
 
         return $weather;
     }
 
-    public function expressUpdate($weather, $weatherInfo, $params = [])
+    public function weatherUpdate($weather, $weatherInfo, $params = [])
     {
         $weather->update([
             'content' => json_encode($weatherInfo)
@@ -52,7 +60,7 @@ class WeatherService
         return $weather;
     }
 
-    public function expressNotify(Weather $weather)
+    public function weatherNotify(Weather $weather)
     {
 //        $view = 'emails.express.update';
 //        $data = compact('express');

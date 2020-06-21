@@ -10,7 +10,7 @@ use App\Models\Weather;
 use Illuminate\Support\Facades\Redis;
 use Mail;
 use App\Models\User;
-use APP\Services\WeatherService;
+use App\Services\WeatherService;
 
 class WeatherController extends Controller
 {
@@ -61,38 +61,18 @@ class WeatherController extends Controller
         $city = $request->input('city') ?? abort(404);
         $type = $request->input('type') ?? 'base';
         $user_id = Auth::id();
-        $keyLimit = 'weathers:user:' . $user_id;
-        $times = Redis::get($keyLimit);
-        if ($times >= 10) {
-            session()->flash('success', '查询次数达到限制！');
-            return redirect()->route('weathers.index');
-        }
-        $keyWeather = 'weathers:user:' . md5($city);
-        $weatherInfo = Redis::get($keyWeather);
-        if ($weatherInfo) {
-            $weatherInfo = json_decode($weatherInfo, true);
-        } else {
-            $result = $weatherApi->getWeather($city, $type);
-            $weatherInfo = $result['lives'][0];
-            Redis::set($keyWeather, json_encode($weatherInfo));
-            Redis::expire($keyWeather, 3600);
-        }
+        $weatherInfo = $this->weatherService->weatherInfo($city, $type, $user_id);
+
         $weather = Weather::where('title', 'like', '%' . $city . '%')->where('user_id', 0)->first();
         if ($weather) {
-            $weather->update([
-                'content' => json_encode($weatherInfo)
-            ]);
+            $params['city'] = $city;
+            $params['type'] = $type;
+            $weather = $this->weatherService->weatherUpdate($weather, $weatherInfo, $params);
         } else {
-            $weather = Weather::create([
-                'title' => $weatherInfo['city'] . 'live',
-                'content' => json_encode($weatherInfo),
-                'user_id' => $user_id
-            ]);
+            $weather = $this->weatherService->weatherSave($weather, $weatherInfo, $request, $user_id);
         }
 
-        Redis::incr($keyLimit);
-
-        $this->weatherUpdate($weather);
+        $this->weatherService->weatherNotify($weather);
 
 
         return redirect()->route('weathers.show', $weather);
@@ -143,14 +123,12 @@ class WeatherController extends Controller
             'title' => 'required|max:50',
         ]);
         if ($type == 'data') {
-            $expressInfo = $this->weatherService->weatherInfo($weather->title);
+            $expressInfo = $this->weatherService->weatherInfo($weather->city, $weather->type, Auth::id());
             if (!$expressInfo) {
                 session()->flash('failed', '天气信息为空');
                 return redirect()->route('weathers.show', $weather);
             }
-            $params['type'] = $type;
-            $params['title'] = $request->title;
-            $express = $this->weatherService->weatherUpdate($weather, $expressInfo, $params);
+            $weather = $this->weatherService->weatherUpdate($weather, $expressInfo);
         } else {
             $data = [];
             $data['title'] = $request->title;
