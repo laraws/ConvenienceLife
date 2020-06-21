@@ -54,6 +54,8 @@ RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/compos
 COPY ./docker-config/php   /var/config
 COPY ./docker-config/php/supervisor/laravel-worker.conf /etc/supervisor/conf.d/
 
+
+
 #RUN /bin/bash /var/config/shell/supervisord.sh
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000

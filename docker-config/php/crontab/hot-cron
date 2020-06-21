@@ -1,2 +1,0 @@
-* * * * * cd /mnt/Document/1-php-projects/ConvenienceLife && docker-compose exec app php artisan schedule:run >> /dev/null 2>&1
-* */1 * * * cd /mnt/Document/1-php-projects/ConvenienceLife && docker-compose exec app /bin/bash /var/config/shell/supervisord.sh

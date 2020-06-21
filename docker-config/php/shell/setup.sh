@@ -3,8 +3,7 @@
 # cron配置和启动
 
 crontab /var/www/docker-config/php/crontab/cron
-service cron stop
-service cron start
+service cron restart
 
 #supervisord
 cp /var/www/docker-config/php/supervisor/laravel-worker.conf  /etc/supervisor/conf.d/
