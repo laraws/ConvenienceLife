@@ -25,10 +25,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 //        $schedule->command('inspire')->everyMinute();
-        $schedule->command('expresses:notification')->hourly();
-        $schedule->command('weathers:notification')->hourly();
-        $schedule->command('expresses:update')->hourly();
-        $schedule->command('weathers:update')->hourly();
+        $schedule->command('expresses:notification')->everyFiveMinutes();
+        $schedule->command('weathers:notification')->everyFiveMinutes();
+        $schedule->command('expresses:update')->everyFiveMinutes();
+        $schedule->command('weathers:update')->everyFiveMinutes();
     }
 
     /**
