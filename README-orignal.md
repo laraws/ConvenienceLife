@@ -45,6 +45,10 @@
 - webpack前端打包
 
   编写scss和js并使用webpack编译和打包处理, 增强前端的可维护性和高效性
+  
+-   https加密
+
+    网站全站使用https加密，访问http自动定向https网站
 
 ## Installation
 
