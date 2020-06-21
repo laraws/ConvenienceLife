@@ -4,7 +4,7 @@ RUN rm -f /etc/localtime
 RUN ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 # Copy composer.lock and composer.json
-COPY ./docker-config/php/composer.phar /var/
+COPY ./docker-config/php/composer/composer.phar /var/
 
 # apt source
 RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
@@ -52,6 +52,9 @@ RUN cd /var && mv composer.phar /usr/local/bin/composer
 RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 
 COPY ./docker-config/php   /var/config
+COPY ./docker-config/php/supervisor/laravel-worker.conf /etc/supervisor/conf.d/
+
+#RUN /bin/bash /var/config/shell/supervisord.sh
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
 CMD ["php-fpm"]

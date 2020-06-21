@@ -3,14 +3,14 @@ services:
 
   #PHP Service
   app:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: conveniencelife/php
     container_name: convenience_life_app
     restart: unless-stopped
     tty: true
-    command: bash -c "/var/www/docker-config/php/shell/setup.sh && php-fpm"
+#    command: bash -c "php-fpm && /var/www/docker-config/php/shell/supervisord.sh"
     environment:
       SERVICE_NAME: ${SERVICE_TAGS}
       SERVICE_TAGS: ${SERVICE_NAME}

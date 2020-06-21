@@ -1,5 +1,5 @@
 <?php
-namespace APP\Services;
+namespace App\Services;
 
 use App\Mail\WeatherInfo;
 use App\Models\Weather;
@@ -19,6 +19,8 @@ class WeatherService
 
     public function weatherInfo($city, $type, $uid)
     {
+        if ($type == 1) $type = 'base';
+        else $type = 'all';
         $keyLimit = 'weathers:user:' . $uid;
         $times = Redis::get($keyLimit);
         if ($times >= 10) {
