@@ -1,15 +1,13 @@
 #!/bin/bash
-# php项目的一些服务启动
-# cron配置和启动
 
-crontab /var/www/docker-config/php/crontab/cron
-service cron restart
+cronStatus=$( service cron status >/dev/null 2>&1 && echo 1 || echo 0)
+superStatus=$( service supervisor status >/dev/null 2>&1 && echo 1 || echo 0)
 
-#supervisord
-cp /var/www/docker-config/php/supervisor/laravel-worker.conf  /etc/supervisor/conf.d/
-supervisord -c /etc/supervisor/supervisord.conf
-supervisorctl reread
-supervisorctl update
-supervisorctl start laravel-worker:*
-#supervisorctl start cron-worker:*
+if [ $cronStatus -eq 0 ];then
+  crontab /var/crontab/cron
+  service cron start
+  fi
 
+if [ $superStatus -eq 0 ];then
+  /var/shell/supervisord.sh
+  fi

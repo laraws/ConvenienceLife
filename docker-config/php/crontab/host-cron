@@ -1,7 +1,0 @@
-@reboot sleep 60 && docker exec convenience_life_app /bin/bash /var/www/docker-config/php/shell/setup.sh
-
-0 * * * * docker exec convenience_life_app /bin/bash /var/config/shell/supervisord.sh
-0 6,12,18 * * * docker exec convenience_life_app app php artisan expresses:update
-0 6,12,18 * * * docker exec convenience_life_app app php artisan weathers:update
-0 6,12,18 * * * docker exec convenience_life_app php artisan expresses:notification
-0 6,12,18 * * * docker exec convenience_life_app php artisan weathers:notification
