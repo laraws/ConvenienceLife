@@ -25,6 +25,6 @@ class WeChatController extends Controller
 
     public function backUrl(Request $request)
     {
-        return ['hello'];
+        return $request->all();
     }
 }
