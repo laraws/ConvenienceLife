@@ -2,8 +2,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
-class WechatController extends Controller
+class WeChatController extends Controller
 {
     /**
      * 处理微信的请求消息
@@ -20,5 +21,10 @@ class WechatController extends Controller
         });
 
         return $app->server->serve();
+    }
+
+    public function backUrl(Request $request)
+    {
+        return ['hello'];
     }
 }

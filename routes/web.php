@@ -53,4 +53,5 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
 Route::any('/wechat', 'WeChatController@serve');
+Route::any('/wechat/backUrl', 'WeChatController@backUrl');
 
